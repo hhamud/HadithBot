@@ -1,2 +1,5 @@
 Keys.py
-
+*.pyc
+*.pyo
+*.pyd
+__pycache__
