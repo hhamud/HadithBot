@@ -1,25 +1,20 @@
+##############################################################################################################################################################################################################################################
+
+#Import packages
+##############################################################################################################################################################################################################################################
 import tweepy as tp 
 import re
 import time
 import logging
+from os import environ
 from requests_html import HTMLSession
 from os import environ
-
-# TODO: rewrite the script such it activates upon the ping rather than it continously pinging twitter to scan the site
-# TODO: encapsulate the project within a docker image
-# TODO: transfer the docker image onto google cloud
-# TODO: upload the contents of the script to github
-# TODO: learn and create an agile method
-# TODO: Think about caching some of the hadiths (redis,click)
-# TODO: including information about the hadith history 
+from keys import CONSUMER_KEY, CONSUMER_KEY_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET
 
 
-CONSUMER_KEY = environ['CONSUMER_KEY']
-CONSUMER_KEY_SECRET = environ['CONSUMER_KEY_SECRET']
-ACCESS_TOKEN = environ['ACCESS_TOKEN']
-ACCESS_TOKEN_SECRET = environ['ACCESS_TOKEN_SECRET']
-
-
+##############################################################################################################################################################################################################################################
+#access account
+##############################################################################################################################################################################################################################################
 auth = tp.OAuthHandler(CONSUMER_KEY, CONSUMER_KEY_SECRET)
 
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
@@ -27,6 +22,10 @@ auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 api = tp.API(auth)
 
 
+
+##############################################################################################################################################################################################################################################
+# script
+##############################################################################################################################################################################################################################################
 
 def parse_input():
     mentions = api.mentions_timeline()
@@ -36,6 +35,7 @@ def parse_input():
             author = input[i+1]
             book = input[i+2]
             hadith = input[i+3]
+            print(author,book,hadith)
         else:
             continue
     return author, book, hadith, mentions
@@ -64,7 +64,11 @@ def post_hadith_tweet(post, url, mentions):
             pass
 
 
-if __name__ == '__main__':
+##############################################################################################################################################################################################################################################
+#run script
+##############################################################################################################################################################################################################################################
+
+if __name__ == "__main__":
     while True:
         author, book, hadith, mentions = parse_input()
         post, link = hadith_call(author,book,hadith)

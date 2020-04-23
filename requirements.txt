@@ -1,11 +1,8 @@
 tweepy
 redis
-re
-time
-logging
 requests_html
-os
 flask
+gunicorn 
 
 
 

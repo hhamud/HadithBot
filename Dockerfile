@@ -17,12 +17,16 @@ RUN pip install -r requirements.txt
 # The second parameter '/' is the path where to put the file on the image.
 # . is the current directory 
 # Here we put the file at the image root folder.
-COPY hadith.py .
-
+COPY . .
 # We need to define the command to launch when we are going to run the image.
 # We use the keyword 'CMD' to do that.
 # The following command will execute "python ./hadith.py".
-CMD [ "python", "./hadith.py" ]
+
+CMD exec gunicorn --bind 0.0.0.0:8000 --timeout 0 app:app
+
+
+
+
 
 
 
