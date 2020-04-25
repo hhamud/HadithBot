@@ -8,9 +8,7 @@ import time
 import logging
 from os import environ
 from requests_html import HTMLSession
-from os import environ
 from keys import CONSUMER_KEY, CONSUMER_KEY_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET
-import json
 
 
 ##############################################################################################################################################################################################################################################
@@ -33,6 +31,9 @@ def parse_input():
     replies = api.user_timeline()
     att = replies[0]._json
     user = mentions[0]._json
+    authors = []
+    books = []
+    hadiths = []
     if not att['in_reply_to_status_id'] == user['id']:
         full_comment = re.split("\s", mentions[0].text)
         for i, j in enumerate(full_comment):
@@ -40,20 +41,25 @@ def parse_input():
                 author = full_comment[i+1]
                 book = full_comment[i+2]
                 hadith = full_comment[i+3]
+                authors.append(author)
+                books.append(book)
+                hadiths.append(hadith)
             else:
                 pass
-        return author, book, hadith, mentions
+        return authors, books, hadiths, mentions
 
                 
-def hadith_call(author, book, hadith):
+def hadith_call(authors, books, hadiths):
+    #change this to be able to read multiple urls and hadiths 
     base= "https://sunnah.com/"
-    url = base + '/' + author + '/' + str(book) + '/' + str(hadith)
-    session = HTMLSession()
-    r = session.get(url)
-    s = r.html.find('.english_hadith_full', first=True)
-    post = s.text
-    link = "Link to the Hadith: %s" % (url)
-    return post, link
+    for i in range(len(authors)):
+        url = base + '/' + authors[i] + '/' + str(books[i]) + '/' + str(hadiths[i])
+        session = HTMLSession()
+        r = session.get(url)
+        s = r.html.find('.english_hadith_full', first=True)
+        post = s.text
+        link = "Link to the Hadith: %s" % (url)
+        return post, link
 
 def post_hadith_tweet(post, url, mentions):
     thread = str(post) + '  ' + str(url)
@@ -73,9 +79,11 @@ def post_hadith_tweet(post, url, mentions):
 ##############################################################################################################################################################################################################################################
 
 if __name__ == "__main__":
-    # while True:
-    #     author, book, hadith, mentions = parse_input()
-    #     post, link = hadith_call(author,book,hadith)
-    #     post_hadith_tweet(post, link, mentions)
-    #     time.sleep(30)
+    while True:
+        authors, books, hadiths, mentions = parse_input()
+        post, link = hadith_call(authors,books,hadiths)
+        post_hadith_tweet(post, link, mentions)
+        time.sleep(30)
+
+
 
