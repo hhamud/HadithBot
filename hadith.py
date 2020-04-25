@@ -10,6 +10,7 @@ from os import environ
 from requests_html import HTMLSession
 from os import environ
 from keys import CONSUMER_KEY, CONSUMER_KEY_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET
+import json
 
 
 ##############################################################################################################################################################################################################################################
@@ -29,16 +30,19 @@ api = tp.API(auth)
 
 def parse_input():
     mentions = api.mentions_timeline()
-    input = re.split("\s", mentions[0].text)
-    for i in range(len(input)):
-        if input[i] == "@BotHadith":
-            author = input[i+1]
-            book = input[i+2]
-            hadith = input[i+3]
-            print(author,book,hadith)
-        else:
-            continue
-    return author, book, hadith, mentions
+    replies = api.user_timeline()
+    att = replies[0]._json
+    user = mentions[0]._json
+    if not att['in_reply_to_status_id'] == user['id']:
+        full_comment = re.split("\s", mentions[0].text)
+        for i, j in enumerate(full_comment):
+            if "@BotHadith" == j:
+                author = full_comment[i+1]
+                book = full_comment[i+2]
+                hadith = full_comment[i+3]
+            else:
+                pass
+        return author, book, hadith, mentions
 
                 
 def hadith_call(author, book, hadith):
@@ -69,10 +73,9 @@ def post_hadith_tweet(post, url, mentions):
 ##############################################################################################################################################################################################################################################
 
 if __name__ == "__main__":
-    while True:
-        author, book, hadith, mentions = parse_input()
-        post, link = hadith_call(author,book,hadith)
-        post_hadith_tweet(post, link, mentions)
-        time.sleep(30)
-
+    # while True:
+    #     author, book, hadith, mentions = parse_input()
+    #     post, link = hadith_call(author,book,hadith)
+    #     post_hadith_tweet(post, link, mentions)
+    #     time.sleep(30)
 
